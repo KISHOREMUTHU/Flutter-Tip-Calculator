@@ -8,7 +8,9 @@ class TipCalculator extends StatefulWidget {
 }
 
 class _TipCalculatorState extends State<TipCalculator> {
-             int tip_percent = 0;
+             var tip_percent = 0;
+
+
              int person = 1;
              double total = 0.0;
   @override
@@ -35,6 +37,41 @@ class _TipCalculatorState extends State<TipCalculator> {
           scrollDirection: Axis.vertical,
           padding : EdgeInsets.all(20.0),
           children:<Widget> [
+            Container (
+              width : 200,
+              height : 150,
+
+              decoration : BoxDecoration(
+                color:Colors.green.shade100 ,
+                borderRadius : BorderRadius.circular(14.0),
+                border: Border.all(
+                  color : Colors.green,
+                ),
+              ),
+              child : Center(
+                child: Column (
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text("Total Bill With Tip ",
+                      style : TextStyle(
+                        fontWeight : FontWeight.bold,
+                        fontSize : 20.0,
+                        color: Colors.grey.shade900,
+                      ),),
+                    SizedBox(height : 20.0,),
+                    Text("\$ ${(totalbill(total, person,tip_percent))}",
+                      style : TextStyle(
+                        fontWeight : FontWeight.bold,
+                        fontSize : 45.0,
+                        color: Colors.grey.shade900,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            ),
+            SizedBox(height : 20),
             Container (
               width : 200,
               height : 200,
@@ -96,12 +133,10 @@ class _TipCalculatorState extends State<TipCalculator> {
                         try {
                           total = double.parse(value);
                         } catch (exception) {
-                          final nameHolder = TextEditingController();
-                          clearTextInput(){
-                            nameHolder.clear();
+                          total = 0.0;
                           }
-                        }
-                      });
+                        },);
+
                     },
                   ),
                   Row (
@@ -210,19 +245,21 @@ class _TipCalculatorState extends State<TipCalculator> {
                         ),
 
                       ),
+
                       Slider (
-                          min : 0,
-                          max:100,
+                        min : 0,
+                        max:100,
                         activeColor : Colors.green.shade500,
                         inactiveColor: Colors.grey.shade500,
-                        divisions : 10,
+                        divisions : 100,
                         value : tip_percent.toDouble(),
                         onChanged: (double result){
-                            setState(() {
-                              tip_percent=result.round();
-                            });
+                          setState(() {
+                            tip_percent=result.round();
+                          });
                         },
                       ),
+
                     ],
                   ),
                 ],
@@ -236,7 +273,10 @@ class _TipCalculatorState extends State<TipCalculator> {
        calculate(double bill , int splitBy , int tipPercent){
               var totalperperson;
               if(bill<0||bill.toString().isEmpty||bill==null){
-                return 0;
+                setState((){
+                  totalperperson = 0;
+                  return totalperperson.toStringAsFixed(2);
+                });
               }
               else{
              totalperperson = (calculateTotalTip(bill, splitBy, tipPercent) + bill)/splitBy;
@@ -250,9 +290,30 @@ class _TipCalculatorState extends State<TipCalculator> {
 
               return total;
        }
+       totalbill(double bill , int splitBy , int tipPercent){
+         var total =0.0;
+         total = (bill * tipPercent) / 100;
+         var totalperperson;
+         if(bill<0||bill.toString().isEmpty||bill==null){
+           setState((){
+             totalperperson = 0;
+           //  return totalperperson.toStringAsFixed(2);
+           });
+         }
+         else {
+           totalperperson =
+               (calculateTotalTip(bill, splitBy, tipPercent) + bill) / splitBy;
+           // return totalperperson.toStringAsFixed(2);}
+         }
+         return (bill+total).toStringAsFixed(2);
 
+
+       }
         answer(double total){
               return total.toString();
+       }
+       reverse (int value){
+       return 100 - value;
        }
 
 }
